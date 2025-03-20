@@ -1,0 +1,22 @@
+name: 'Node - Build'
+description: 'This action is used to build a node project.'
+author: Patryk Waluś <patryk.walus@vaimo.com>
+inputs:
+  env-vars:
+    description: 'Environment variables to be set in .env file.'
+    required: false
+    type: string
+runs:
+  using: "composite"
+  steps:
+    - name: Create .env file
+      shell: bash
+      run: echo "${{ inputs.env-vars }}" > .env
+
+    - name: Install dependencies
+      shell: bash
+      run: yarn install --frozen-lockfile
+
+    - name: Build
+      shell: bash
+      run: yarn build
