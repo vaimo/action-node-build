@@ -2,6 +2,9 @@ name: 'Node - Build'
 description: 'This action is used to build a node project.'
 author: Patryk Waluś <patryk.walus@vaimo.com>
 inputs:
+  package-manager:
+    description: 'Package manager to use. Supported values: npm, yarn, pnpm.'
+    required: true
   env-vars:
     description: 'Environment variables to be set in .env file.'
     required: false
@@ -15,8 +18,20 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      run: yarn install --frozen-lockfile
+      run: |
+        case "${{ inputs.package-manager }}" in
+          npm)  npm ci ;;
+          yarn) yarn install --frozen-lockfile ;;
+          pnpm) pnpm install --frozen-lockfile ;;
+          *)    echo "Unsupported package manager: ${{ inputs.package-manager }}" && exit 1 ;;
+        esac
 
     - name: Build
       shell: bash
-      run: yarn build
+      run: |
+        case "${{ inputs.package-manager }}" in
+          npm)  npm run build ;;
+          yarn) yarn build ;;
+          pnpm) pnpm build ;;
+          *)    echo "Unsupported package manager: ${{ inputs.package-manager }}" && exit 1 ;;
+        esac
